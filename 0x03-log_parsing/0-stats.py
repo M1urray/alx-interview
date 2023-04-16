@@ -1,40 +1,49 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
-    Reads standard input line by line and computes metrics.
+    script that reads stdin line by line and computes metrics
 """
 import sys
-from collections import defaultdict
 
 
-def print_metrics(metrics):
-    """Prints the computed metrics."""
-    print(f"File size: {metrics['file_size']}")
-    for code, count in sorted(metrics['codes'].items()):
-        if count > 0:
-            print(f"{code}: {count}")
+def print_msg(codes, file_size):
+    print("File size: {}".format(file_size))
+    for key, val in sorted(codes.items()):
+        if val != 0:
+            print("{}: {}".format(key, val))
 
 
-def compute_metrics(lines):
-    """Computes metrics for a list of lines."""
-    metrics = defaultdict(int)
-    for line in lines:
-        parts = line.split()
-        if len(parts) >= 2:
-            metrics['file_size'] += int(parts[-1])
-            code = parts[-2]
-            if code in metrics['codes']:
-                metrics['codes'][code] += 1
-    return metrics
+file_size = 0
+code = 0
+count_lines = 0
+codes = {
+    "200": 0,
+    "301": 0,
+    "400": 0,
+    "401": 0,
+    "403": 0,
+    "404": 0,
+    "405": 0,
+    "500": 0
+}
 
-
-if __name__ == '__main__':
-    lines = []
+try:
     for line in sys.stdin:
-        lines.append(line.strip())
-        if len(lines) == 10:
-            metrics = compute_metrics(lines)
-            print_metrics(metrics)
-            lines = []
-    if lines:
-        metrics = compute_metrics(lines)
-        print_metrics(metrics)
+        parsed_line = line.split()
+        parsed_line = parsed_line[::-1]
+
+        if len(parsed_line) > 2:
+            count_lines += 1
+
+            if count_lines <= 10:
+                file_size += int(parsed_line[0])
+                code = parsed_line[1]
+
+                if (code in codes.keys()):
+                    codes[code] += 1
+
+            if (count_lines == 10):
+                print_msg(codes, file_size)
+                count_lines = 0
+
+finally:
+    print_msg(codes, file_size)
