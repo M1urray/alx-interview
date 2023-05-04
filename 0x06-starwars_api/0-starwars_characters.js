@@ -6,8 +6,12 @@ const request = require('request');
 function retrive (urlChar) {
   return new Promise(function (resolve, reject) {
     request(urlChar, function getChar (err2, response2, body2) {
-        var message = err2  ? reject(err2) : resolve(JSON.parse(body2).name);
-        return message;
+        if(err2){
+            reject(err2);
+        }  
+        else{
+        resolve(JSON.parse(body2).name)
+        }
     });
   });
 }
