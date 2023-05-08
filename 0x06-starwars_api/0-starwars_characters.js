@@ -1,33 +1,41 @@
 #!/usr/bin/node
-const id = process.argv[2];
-const url = 'https://swapi-api.hbtn.io/api/films/' + id;
 const request = require('request');
+const API_URL = 'https://swapi-api.hbtn.io/api';
 
-function retrive (urlChar) {
-  return new Promise(function (resolve, reject) {
-    request(urlChar, function getChar (err2, response2, body2) {
-        if(err2){
-            reject(err2);
-        }  
-        else{
-        resolve(JSON.parse(body2).name)
+if (process.argv.length <= 2) {
+  console.log('Usage: node script.js <film-id>');
+  process.exit(1);
+}
+
+const filmId = process.argv[2];
+const filmUrl = `${API_URL}/films/${filmId}/`;
+
+request.get(filmUrl, (err, response, body) => {
+  if (err || response.statusCode !== 200) {
+    console.error('Error:', err || body);
+    process.exit(1);
+  }
+
+  const characters = JSON.parse(body).characters;
+  const promises = characters.map((url) => {
+    return new Promise((resolve, reject) => {
+      request.get(url, (err, response, body) => {
+        if (err || response.statusCode !== 200) {
+          reject(err || body);
+        } else {
+          const characterName = JSON.parse(body).name;
+          resolve(characterName);
         }
+      });
     });
   });
-}
 
-async function getlist (urlist) {
-  for (const urlChar of urlist) {
-    const character = await retrive(urlChar);
-    console.log(character);
-  }
-}
-
-request(url, function getList (err, response, body) {
-  if (err) {
-    throw err;
-  } else {
-    const urlist = JSON.parse(body).characters;
-    getlist(urlist);
-  }
+  Promise.all(promises)
+    .then((names) => {
+      console.log(names.join('\n'));
+    })
+    .catch((err) => {
+      console.error('Error:', err);
+      process.exit(1);
+    });
 });
