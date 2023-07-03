@@ -1,24 +1,30 @@
 #!/usr/bin/python3
-"""Island perimeter computing module.
+"""
+Module used to
 """
 
 
 def island_perimeter(grid):
-    if not grid:
-        return 0
-    rows = len(grid)
+    """[summary]
+
+    Args:
+        grid ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+
     perimeter = 0
-    for row in range(rows):
-        m = len(row)
-        for j, cell in enumerate(row):
-            if cell == 0:
-                continue
-            edges = (
-                row == 0 or (len(grid[row - 1]) > j and grid[row - 1][j] == 0),
-                j == m - 1 or (m > j + 1 and row[j + 1] == 0),
-                row == rows - 1 or (len(grid[row + 1]) >
-                                 j and grid[row + 1][j] == 0),
-                j == 0 or row[j - 1] == 0,
-            )
-            perimeter += sum(edges)
+    m = len(grid)
+    n = len(grid[0])
+
+    for i in range(m):
+        for j in range(n):
+            if grid[i][j] == 1:
+                for x, y in [(0, 1), (1, 0), (-1, 0), (0, -1)]:
+                    α, β = i + x, j + y
+                    # print(α, β)
+                    if α >= m or β >= n or α < 0 or β < 0 or grid[α][β] == 0:
+                        perimeter += 1
+
     return perimeter
