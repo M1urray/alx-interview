@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-"""N queens solution finder module.
-"""
+''' Python3 program to solve N Queen '''
 import sys
 
 
@@ -23,8 +22,6 @@ k = 1
 
 
 def printSolution(board):
-    """ A utility function to print solution """
-    """ A utility function to print solution """
     queens = []
     global k
     k = k + 1
@@ -56,9 +53,7 @@ def isSafe(board, row, col):
     return True
 
 
-def solutionUtil(board, col):
-    """ This function solves the N Queen problem """
-    """ This function solves the N Queen problem """
+def solveNQUtil(board, col):
     if col == N:
         printSolution(board)
         return True
@@ -66,19 +61,15 @@ def solutionUtil(board, col):
     for i in range(N):
         if isSafe(board, i, col):
             board[i][col] = 1
-            res = solutionUtil(board, col + 1) or res
+            res = solveNQUtil(board, col + 1) or res
             board[i][col] = 0
     return res
 
 
-def solution():
-    """ solve NQ """
-    """ solve NQ """
+def solveNQ():
     board = [[0 for j in range(N)] for i in range(N)]
-    if solutionUtil(board, 0) is False:
+    if solveNQUtil(board, 0) is False:
         pass
         return
     return
-
-
-solution()
+solveNQ()
